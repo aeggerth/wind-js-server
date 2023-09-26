@@ -1,19 +1,22 @@
-FROM node:18
+FROM node:14
+
+# Install Java (OpenJDK) and other dependencies
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jre-headless && \
+    apt-get clean
+
+# Create symbolic link for java env
+RUN ln -s /usr/bin/java /bin/java
 
 # Create app directory
 WORKDIR /usr/src/app
 
 # Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
 COPY package*.json ./
-
 RUN npm install --omit=dev
-# If you are building your code for production
-# RUN npm ci --omit=dev
 
 # Bundle app source
 COPY . .
 
-EXPOSE 8080
+EXPOSE 7000
 CMD [ "node", "app.js" ]
