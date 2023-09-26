@@ -11,33 +11,21 @@ var port = process.env.PORT || 7000;
 var baseDir ='http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_1p00.pl';
 
 // cors config
-var whitelist = [
-	'http://localhost:63342',
-	'http://localhost:3000',
-	'http://localhost:4000',
-	'http://danwild.github.io'
-];
-
-var corsOptions = {
-	origin: function(origin, callback){
-		var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-		callback(null, originIsWhitelisted);
-	}
-};
+app.use(cors())
 
 app.listen(port, function(err){
 	console.log("running server on port "+ port);
 });
 
-app.get('/', cors(corsOptions), function(req, res){
+app.get('/', function(req, res){
     res.send('hello wind-js-server.. go to /latest for wind data..');
 });
 
-app.get('/alive', cors(corsOptions), function(req, res){
+app.get('/alive', function(req, res){
 	res.send('wind-js-server is alive');
 });
 
-app.get('/latest', cors(corsOptions), function(req, res){
+app.get('/latest', function(req, res){
 
 	/**
 	 * Find and return the latest available 6 hourly pre-parsed JSON data
@@ -62,7 +50,7 @@ app.get('/latest', cors(corsOptions), function(req, res){
 
 });
 
-app.get('/nearest', cors(corsOptions), function(req, res, next){
+app.get('/nearest', function(req, res, next){
 
 	var time = req.query.timeIso;
 	var limit = req.query.searchLimit;
