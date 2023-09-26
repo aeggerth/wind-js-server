@@ -150,7 +150,8 @@ function getGribData(targetMoment){
             return;
         }
 
-		var stamp = moment(targetMoment).format('YYYYMMDD') + roundHours(moment(targetMoment).hour(), 6);
+		var stamp_label = moment(targetMoment).format('YYYYMMDD') + roundHours(moment(targetMoment).hour(), 6);
+		var stamp = moment(targetMoment).format('YYYYMMDD') + '/' + roundHours(moment(targetMoment).hour(), 6) + '/atmos';
 		request.get({
 			url: baseDir,
 			qs: {
@@ -181,24 +182,24 @@ function getGribData(targetMoment){
 
 			else {
 				// don't rewrite stamps
-				if(!checkPath('json-data/'+ stamp +'.json', false)) {
+				if(!checkPath('json-data/'+ stamp_label +'.json', false)) {
 
-					console.log('piping ' + stamp);
+					console.log('piping ' + stamp_label);
 
 					// mk sure we've got somewhere to put output
 					checkPath('grib-data', true);
 
 					// pipe the file, resolve the valid time stamp
-					var file = fs.createWriteStream("grib-data/"+stamp+".f000");
+					var file = fs.createWriteStream("grib-data/"+stamp_label+".f000");
 					response.pipe(file);
 					file.on('finish', function() {
 						file.close();
-						deferred.resolve({stamp: stamp, targetMoment: targetMoment});
+						deferred.resolve({stamp: stamp_label, targetMoment: targetMoment});
 					});
 
 				}
 				else {
-					console.log('already have '+ stamp +', not looking further');
+					console.log('already have '+ stamp_label +', not looking further');
 					deferred.resolve({stamp: false, targetMoment: false});
 				}
 			}
@@ -237,7 +238,7 @@ function convertGribToJson(stamp, targetMoment){
 
 				if(!checkPath('json-data/'+ prevStamp +'.json', false)){
 
-					console.log("attempting to harvest older data "+ stamp);
+					console.log("attempting to harvest older data "+ prevStamp);
 					run(prevMoment);
 				}
 
